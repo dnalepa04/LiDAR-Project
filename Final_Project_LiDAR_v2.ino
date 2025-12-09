@@ -4,10 +4,10 @@
 #define IRQ_PIN 2
 #define XSHUT_PIN 3
 
-const int stepsPerRevolution = 2048;  
+const int stepsPerRevolution = 2048;
 
 Adafruit_VL53L1X vl53 = Adafruit_VL53L1X(XSHUT_PIN, IRQ_PIN);
-Stepper myStepper(stepsPerRevolution, 5,6,7,8);
+Stepper myStepper(stepsPerRevolution, 5, 6, 7, 8);
 
 void setup() {
   Serial.begin(115200);
@@ -16,18 +16,17 @@ void setup() {
   Serial.println(F("Adafruit VL53L1X sensor demo"));
 
   Wire.begin();
-  if (! vl53.begin(0x29, &Wire)) {
+  if (!vl53.begin(0x29, &Wire)) {
     Serial.print(F("Error on init of VL sensor: "));
     Serial.println(vl53.vl_status);
     while (1) delay(10);
   }
 
   Serial.println(F("VL53L1X sensor OK!"));
-
   Serial.print(F("Sensor ID: 0x"));
   Serial.println(vl53.sensorID(), HEX);
 
-  if (! vl53.startRanging()) {
+  if (!vl53.startRanging()) {
     Serial.print(F("Couldn't start ranging: "));
     Serial.println(vl53.vl_status);
     while (1) delay(10);
@@ -47,7 +46,6 @@ void loop() {
   int16_t distance;
 
   if (vl53.dataReady()) {
-
     distance = vl53.distance();
     if (distance == -1) {
       Serial.print(F("Couldn't get distance: "));
@@ -55,7 +53,7 @@ void loop() {
       return;
     }
 
-    Serial.print(F("Angle: Distance: "));
+    Serial.print(F("Distance: "));
     Serial.print(distance);
     Serial.println(" mm");
 
@@ -63,13 +61,13 @@ void loop() {
     if (distance >= 55 && distance <= 80) {
       Serial.println("Object detected - Stepper stopped");
       delay(100);  // short delay to prevent flooding Serial output
-    } else if (distance > 80) {  
+    } 
+    else if (distance > 80) {  
       // Continuous clockwise movement
-      myStepper.step(128);  // move 128 step at a time
-      // no long delay, but can put a very short delay if needed for smoothness
-      delay(1);  
+      myStepper.step(128);  // move 128 steps at a time
+      delay(1);             // very short delay for smoothness
     }
+
     vl53.clearInterrupt();
   }
 }
-
