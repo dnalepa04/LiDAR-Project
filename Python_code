@@ -1,0 +1,69 @@
+import serial
+import time
+import math
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+ 
+# ---- Serial port ----
+ser = serial.Serial('COM9', 115200, timeout=1)
+time.sleep(2)
+ 
+# Store one point per angle {angle_deg : (angle_rad, distance)}
+points = {}
+ 
+# ---- Setup polar plot ----
+fig = plt.figure(figsize=(6,6), facecolor='black')  # black background
+ax = fig.add_subplot(111, polar=True, facecolor='black')
+ 
+# Smaller green points
+line, = ax.plot([], [], 'go', markersize=4)  # green points
+ 
+ax.set_theta_zero_location('N')
+ax.set_theta_direction(-1)
+ 
+# Radar max distance
+ax.set_rlim(0, 3000)
+ 
+# Customize grid & circles
+ax.grid(color='darkgreen', linestyle='--', linewidth=0.5)
+ax.set_yticklabels([])  # remove radial labels
+ax.set_xticklabels([])  # remove angle labels
+ 
+# Optional: sweeping radar line
+sweep_line, = ax.plot([], [], color='lime', linewidth=1, alpha=0.3)
+ 
+def update(frame):
+    raw = ser.readline().decode('utf-8').strip()
+    if not raw:
+        return line, sweep_line
+ 
+    try:
+        angle_str, dist_str = raw.split(',')
+        angle_deg = int(float(angle_str))
+ 
+        dist_val = float(dist_str)
+        if dist_val < 0:
+            dist_val = 3000
+ 
+        points[angle_deg] = (math.radians(angle_deg), dist_val)
+ 
+        # Build data
+        angle_rads = []
+        dists = []
+        for angle_rad, dist in points.values():
+            angle_rads.append(angle_rad)
+            dists.append(dist)
+ 
+        line.set_data(angle_rads, dists)
+ 
+        # Update sweep line
+        sweep_line.set_data([math.radians(angle_deg), math.radians(angle_deg)],
+                            [0, 3000])
+ 
+    except Exception:
+        pass
+ 
+    return line, sweep_line
+ 
+ani = FuncAnimation(fig, update, interval=5, cache_frame_data=False)
+plt.show(block=True)
