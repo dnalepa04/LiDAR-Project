@@ -1,2 +1,2 @@
 # LiDAR-Project
-This is a repo for my 5990A Optoelectronics Final Project where my friend Nate Seibold and I built a crude LiDAR system. While this project uses an Arduino Metro Mini as its main Microcontroller, it requires python code and a matlab library to plot the radar scan. THe .ino file is for the arduino and the python code should be ran after the arduino code has been uploaded.
+Repo for basic LiDAR system using time of flight (ToF) sensor and stepper motor. Runs on Arduino, plotting code handled over serial using Python. Also included are files to replicate some of the necessary physical components. Created by Daniel Nalepa and Nate Seibold for UVM EE 5990 - Optoelectronics Final Project, Fall 2025.
